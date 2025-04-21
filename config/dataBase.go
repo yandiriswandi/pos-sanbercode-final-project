@@ -23,17 +23,17 @@ func InitDB() {
 	}
 	var err error
 	// Ambil value dari environment
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
+	// dbHost := os.Getenv("DB_HOST")
+	// dbPort := os.Getenv("DB_PORT")
+	// dbUser := os.Getenv("DB_USER")
+	// dbPassword := os.Getenv("DB_PASSWORD")
+	// dbName := os.Getenv("DB_NAME")
 
-	// dbHost := os.Getenv("PGHOST")
-	// dbPort := os.Getenv("PGPORT")
-	// dbUser := os.Getenv("PGUSER")
-	// dbPassword := os.Getenv("PGPASSWORD")
-	// dbName := os.Getenv("PGDATABASE")
+	dbHost := os.Getenv("PGHOST")
+	dbPort := os.Getenv("PGPORT")
+	dbUser := os.Getenv("PGUSER")
+	dbPassword := os.Getenv("PGPASSWORD")
+	dbName := os.Getenv("PGDATABASE")
 
 	// Bangun connection string
 	connStr := fmt.Sprintf(
@@ -87,13 +87,29 @@ func InitDB() {
     	quantity INTEGER NOT NULL,
     	price NUMERIC(12, 2) NOT NULL,
     	subtotal NUMERIC(12, 2) NOT NULL,
+    	address TEXT,
     	note TEXT,
    
-    CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES product(id)
-);
+    	CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users(id),
+    	CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES product(id)
+	);
 
+	CREATE TABLE IF NOT EXISTS orders (
+		id SERIAL PRIMARY KEY,
+		user_id INTEGER NOT NULL REFERENCES users(id),
+		product_id INTEGER NOT NULL REFERENCES product(id),
+		quantity NUMERIC(12, 2) NOT NULL,
+		price NUMERIC(12, 2) NOT NULL,
+		subtotal NUMERIC(12, 2) NOT NULL,
+		note TEXT,
+		address TEXT,
+		status VARCHAR(50),
+		code VARCHAR(100) NOT NULL UNIQUE,
+		transaction_date TIMESTAMP DEFAULT NOW(),
 
+		CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users(id),
+    	CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES product(id)
+	);
 	`
 
 	DB.MustExec(schema)

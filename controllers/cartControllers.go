@@ -90,10 +90,10 @@ func CreateCart(c *gin.Context) {
 
 	// Insert ke database
 	query := `
-			INSERT INTO cart (user_id, product_id, quantity, price, subtotal, note)
-			VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+			INSERT INTO cart (user_id, product_id, quantity, price, subtotal, note,address)
+			VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING id
 			`
-	err := config.DB.QueryRow(query, cart.UserID, cart.ProductID, cart.Quantity, cart.Price, cart.Subtotal, cart.Note).Scan(&cart.ID)
+	err := config.DB.QueryRow(query, cart.UserID, cart.ProductID, cart.Quantity, cart.Price, cart.Subtotal, cart.Note, cart.Address).Scan(&cart.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
 			Status:  "failed",
@@ -198,8 +198,8 @@ func UpdateCart(c *gin.Context) {
 		return
 	}
 
-	query := `UPDATE cart SET user_id = $1, product_id = $2, quantity = $3, price = $4, subtotal = $5, note = $6 WHERE id = $7`
-	res, err := config.DB.Exec(query, cart.UserID, cart.ProductID, cart.Quantity, cart.Price, cart.Subtotal, cart.Note, id)
+	query := `UPDATE cart SET user_id = $1, product_id = $2, quantity = $3, price = $4, subtotal = $5, note = $6 ,address=$7 WHERE id = $8`
+	res, err := config.DB.Exec(query, cart.UserID, cart.ProductID, cart.Quantity, cart.Price, cart.Subtotal, cart.Note, cart.Address, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.Response{
 			Status:  "failed",
@@ -304,6 +304,7 @@ func GetCarts(c *gin.Context) {
 			product.name AS product_name,
 			cart.quantity,
 			cart.price,
+			cart.address,
 			cart.subtotal,
 			cart.note
 		FROM cart
@@ -334,6 +335,7 @@ func GetCarts(c *gin.Context) {
 			&cart.ProductName,
 			&cart.Quantity,
 			&cart.Price,
+			&cart.Address,
 			&cart.Subtotal,
 			&cart.Note,
 		)
@@ -372,6 +374,7 @@ func GetCart(c *gin.Context) {
 			product.name AS product_name,
 			cart.quantity,
 			cart.price,
+			cart.address,
 			cart.subtotal,
 			cart.note
 		FROM cart
@@ -388,6 +391,7 @@ func GetCart(c *gin.Context) {
 		&cart.ProductName,
 		&cart.Quantity,
 		&cart.Price,
+		&cart.Address,
 		&cart.Subtotal,
 		&cart.Note,
 	)

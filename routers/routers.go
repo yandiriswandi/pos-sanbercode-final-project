@@ -45,5 +45,12 @@ func StartSever() *gin.Engine {
 	router.GET("/cart", middlewares.Authorize(), controllers.GetCarts)
 	router.GET("/cart/:id", middlewares.Authorize(), controllers.GetCart)
 
+	//crud order
+	router.POST("/order", middlewares.Authorize(), controllers.CreateOrder)
+	router.PUT("/order/:id", middlewares.Authorize(), controllers.UpdateOrder)
+	router.DELETE("/order/:id", middlewares.Authorize(), controllers.DeleteOrder)
+	router.GET("/order", middlewares.Authorize(), controllers.GetOrders)
+	router.GET("/order/:id", middlewares.Authorize(), controllers.GetOrder)
+
 	return router
 }

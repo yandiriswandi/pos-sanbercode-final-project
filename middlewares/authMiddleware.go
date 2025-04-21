@@ -6,6 +6,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/yandiriswandi/pos-sanbercode-final-project/models"
 	"github.com/yandiriswandi/pos-sanbercode-final-project/services"
 )
 
@@ -22,7 +23,7 @@ func Authorize(requiredLevels ...int) gin.HandlerFunc {
 		// })
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "message": "Authorization header is missing"})
+			c.JSON(http.StatusUnauthorized, models.Response{Code: 401, Status: "failed", Message: "Authorization header is missing"})
 			c.Abort()
 			return
 		}
@@ -40,20 +41,20 @@ func Authorize(requiredLevels ...int) gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, models.Response{Code: 401, Status: "failed", Message: "Invalid token"})
 			return
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid claims"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, models.Response{Code: 401, Status: "failed", Message: "Invalid claims"})
 			return
 		}
 
 		// Set userID to context
 		userID, ok := claims["id"].(float64)
 		if !ok {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid user ID in token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, models.Response{Code: 401, Status: "failed", Message: "Invalid userId min token"})
 			return
 		}
 		c.Set("userID", int(userID)) // <--- INI YANG PENTING
@@ -67,7 +68,7 @@ func Authorize(requiredLevels ...int) gin.HandlerFunc {
 		// Ambil level user dari token
 		userLevel, ok := claims["level"].(float64)
 		if !ok {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid level in token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, models.Response{Code: 401, Status: "failed", Message: "Invalid level in token"})
 			return
 		}
 
@@ -79,6 +80,6 @@ func Authorize(requiredLevels ...int) gin.HandlerFunc {
 			}
 		}
 
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+		c.AbortWithStatusJSON(http.StatusForbidden, models.Response{Code: 401, Status: "failed", Message: "access denied"})
 	}
 }

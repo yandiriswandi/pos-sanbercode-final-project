@@ -9,5 +9,6 @@ type Cart struct {
 	Subtotal    float64 `db:"subtotal" json:"subtotal"`     // quantity * price
 	Note        string  `db:"note" json:"note"`
 	UserName    string  `json:"user_name"`
+	Address     string  `db:"address" json:"address"`
 	ProductName string  `json:"product_name"` // quantity * price
 }
